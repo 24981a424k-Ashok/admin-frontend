@@ -22,7 +22,7 @@ function Login({ setUser }) {
 
     try {
       // Use absolute URL as fallback if proxy is suspect
-      const apiUrl = '/api/auth/login';
+      const apiUrl = import.meta.env.VITE_API_ORIGIN ? `${import.meta.env.VITE_API_ORIGIN}/api/auth/login` : '/api/auth/login';
       const res = await axios.post(apiUrl, { email, password }, { timeout: 10000 });
       console.log("Server Response Received:", res.data);
 
