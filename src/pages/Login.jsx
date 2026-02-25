@@ -21,9 +21,8 @@ function Login({ setUser }) {
     console.log("Sending request to /api/auth/login...");
 
     try {
-      // Use absolute URL as fallback if proxy is suspect
-      const apiUrl = import.meta.env.VITE_API_ORIGIN ? `${import.meta.env.VITE_API_ORIGIN}/api/auth/login` : '/api/auth/login';
-      const res = await axios.post(apiUrl, { email, password }, { timeout: 10000 });
+      // Always use relative /api path — Vercel proxy routes it to admin-backend
+      const res = await axios.post('/api/auth/login', { email, password }, { timeout: 15000 });
       console.log("Server Response Received:", res.data);
 
       if (res.data.status === 'success') {
