@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UNI Intel Admin</title>
+    <script>
+        window.onerror = function (msg, url, line, col, error) {
+            alert("JS ERROR: " + msg + "\nAt: " + url + ":" + line);
+        };
+        console.log("Global error handler installed.");
+    </script>
+</head>
+
+<body>
+    <div id="root">
+        <div style="color: yellow; padding: 2rem; border: 2px solid yellow; margin: 2rem; font-family: sans-serif;">
+            <h1>ADMIN SYSTEM STANDBY</h1>
+            <p>If you see this, the JavaScript application is still preparing or failed to start.</p>
+        </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>
