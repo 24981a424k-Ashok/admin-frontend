@@ -6,7 +6,7 @@ function AdManagement() {
     const [ads, setAds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddForm, setShowAddForm] = useState(false);
-    const [newAd, setNewAd] = useState({ image_url: '', caption: '', target_node: 'Global' });
+    const [newAd, setNewAd] = useState({ image_url: '', caption: '', position: 'both', target_node: 'Global' });
 
     useEffect(() => {
         fetchAds();
@@ -34,7 +34,7 @@ function AdManagement() {
             await axios.post('/api/ads', newAd, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setNewAd({ image_url: '', caption: '', target_node: 'Global' });
+            setNewAd({ image_url: '', caption: '', position: 'both', target_node: 'Global' });
             setShowAddForm(false);
             fetchAds();
         } catch (err) {
@@ -94,6 +94,19 @@ function AdManagement() {
                                     placeholder="e.g. Premium Intelligence Access"
                                 />
                             </div>
+                            <div className="input-group">
+                                <label>Asset Position</label>
+                                <select
+                                    className="glass-select"
+                                    value={newAd.position}
+                                    onChange={(e) => setNewAd({ ...newAd, position: e.target.value })}
+                                    style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border)', padding: '0.8rem', borderRadius: '12px', color: 'white' }}
+                                >
+                                    <option value="both">Both Sides</option>
+                                    <option value="left">Left Sidebar Only</option>
+                                    <option value="right">Right Sidebar Only</option>
+                                </select>
+                            </div>
                             <div className="modal-actions">
                                 <button type="submit" className="save-btn">Initialize Asset</button>
                                 <button type="button" onClick={() => setShowAddForm(false)} className="cancel-btn">Discard</button>
@@ -125,7 +138,7 @@ function AdManagement() {
                             </div>
                             <div className="ad-meta">
                                 <div className="sponsored-tag">
-                                    <Sparkles size={14} /> SPONSORED INTELLIGENCE
+                                    <Sparkles size={14} /> SPONSORED INTELLIGENCE • {ad.position?.toUpperCase() || 'BOTH'}
                                 </div>
                                 <h3 className="ad-title">{ad.caption || 'No Caption Provided'}</h3>
                                 <p className="ad-url">{ad.image_url}</p>

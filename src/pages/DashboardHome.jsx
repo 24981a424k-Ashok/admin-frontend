@@ -19,29 +19,53 @@ function DashboardHome() {
         articles: 0,
         ads: 0,
         papers: 0,
-        blueprints: 0
+        blueprints: 0,
+        sectors: 0,
+        terminals: 0
     });
     const [loading, setLoading] = useState(true);
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const fetchStats = async () => {
             const token = localStorage.getItem('adminToken');
             const headers = { Authorization: `Bearer ${token}` };
+
             try {
-                const [art, ads, pap, blu] = await Promise.all([
+                // Use allSettled to be robust if the backend has partial issues
+                const results = await Promise.allSettled([
                     axios.get('/api/articles', { headers }),
                     axios.get('/api/ads', { headers }),
                     axios.get('/api/newspapers', { headers }),
                     axios.get('/api/blueprints', { headers })
                 ]);
+
+                const [artRes, adsRes, papRes, bluRes] = results;
+
+                const artData = artRes.status === 'fulfilled' ? artRes.value.data : [];
+                const adsData = adsRes.status === 'fulfilled' ? adsRes.value.data : [];
+                const papData = papRes.status === 'fulfilled' ? papRes.value.data : [];
+                const bluData = bluRes.status === 'fulfilled' ? bluRes.value.data : [];
+
+                // Logic for dynamic counts
+                const uniqueSectors = new Set(artData.map(a => a.category).filter(Boolean)).size;
+                const uniqueTerminals = new Set(artData.map(a => a.country).filter(Boolean)).size;
+
                 setStats({
-                    articles: art.data.length || 0,
-                    ads: ads.data.length || 0,
-                    papers: pap.data.length || 0,
-                    blueprints: blu.data.length || 0
+                    articles: artData.length || 0,
+                    ads: adsData.length || 0,
+                    papers: papData.length || 0,
+                    blueprints: bluData.length || 0,
+                    sectors: uniqueSectors || 0,
+                    terminals: uniqueTerminals || 0
                 });
             } catch (err) {
-                console.error("failed to fetch stats", err);
+                console.error("failed to process stats", err);
             } finally {
                 setLoading(false);
             }
@@ -64,6 +88,10 @@ function DashboardHome() {
                     <p>System operational. All nodes active and reporting.</p>
                 </div>
                 <div className="system-status">
+                    <div className="time-display glass">
+                        <Clock size={14} />
+                        <span>{currentTime.toLocaleTimeString([], { hour12: false })}</span>
+                    </div>
                     <div className="status-indicator">
                         <div className="pulse"></div>
                         <span>NETWORK SECURE</span>
@@ -102,7 +130,7 @@ function DashboardHome() {
                             <div className="module-icon"><Zap size={18} /></div>
                             <div className="module-info">
                                 <strong>Category Intelligence</strong>
-                                <span>9 Active Sectors (Sports, Politics, Tech...)</span>
+                                <span>{loading ? '...' : stats.sectors} Active Sectors</span>
                             </div>
                             <Link to="/admin/articles" className="module-link">Manage</Link>
                         </div>
@@ -110,7 +138,7 @@ function DashboardHome() {
                             <div className="module-icon"><Globe size={18} /></div>
                             <div className="module-info">
                                 <strong>Global Node Network</strong>
-                                <span>12 International Terminals Operational</span>
+                                <span>{loading ? '...' : stats.terminals} International Terminals Operational</span>
                             </div>
                             <Link to="/admin/articles" className="module-link">Monitor</Link>
                         </div>
@@ -212,17 +240,37 @@ function DashboardHome() {
                     font-weight: 900;
                     letter-spacing: 1.5px;
                 }
-                .pulse {
-                    width: 8px;
-                    height: 8px;
-                    background: #10b981;
-                    border-radius: 50%;
-                    box-shadow: 0 0 10px #10b981;
-                    animation: pulse-ring 2s infinite;
+                .time-display {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.6rem 1rem;
+                    border-radius: 100px;
+                    font-family: monospace;
+                    font-size: 0.8rem;
+                    color: var(--accent-gold);
+                    border: 1px solid rgba(251, 206, 4, 0.2);
+                    background: rgba(251, 206, 4, 0.05);
+                }
+                .system-status {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                }
+                .glass {
+                    background: rgba(255, 255, 255, 0.03);
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+                }
+                .stat-card.glass {
+                    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
                 }
                 @keyframes pulse-ring {
-                    0% { transform: scale(1); opacity: 1; }
-                    100% { transform: scale(2.5); opacity: 0; }
+                    0% { transform: scale(1); opacity: 0.5; }
+                    50% { transform: scale(1.5); opacity: 0.2; }
+                    100% { transform: scale(1); opacity: 0.5; }
                 }
 
                 .stats-grid {
