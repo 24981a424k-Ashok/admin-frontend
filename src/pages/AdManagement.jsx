@@ -6,7 +6,7 @@ function AdManagement() {
     const [ads, setAds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddForm, setShowAddForm] = useState(false);
-    const [newAd, setNewAd] = useState({ image_url: '', caption: '', position: 'both', target_node: 'Global' });
+    const [newAd, setNewAd] = useState({ image_url: '', caption: '', position: 'both', target_node: 'Global', target_url: '' });
 
     useEffect(() => {
         fetchAds();
@@ -34,7 +34,7 @@ function AdManagement() {
             await axios.post('/api/ads', newAd, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setNewAd({ image_url: '', caption: '', position: 'both', target_node: 'Global' });
+            setNewAd({ image_url: '', caption: '', position: 'both', target_node: 'Global', target_url: '' });
             setShowAddForm(false);
             fetchAds();
         } catch (err) {
@@ -105,7 +105,17 @@ function AdManagement() {
                                     <option value="both">Both Sides</option>
                                     <option value="left">Left Sidebar Only</option>
                                     <option value="right">Right Sidebar Only</option>
+                                    <option value="mobile">Mobile Overlay</option>
                                 </select>
+                            </div>
+                            <div className="input-group">
+                                <label>Target Redirection URL (Optional)</label>
+                                <input
+                                    type="text"
+                                    value={newAd.target_url || ''}
+                                    onChange={(e) => setNewAd({ ...newAd, target_url: e.target.value })}
+                                    placeholder="https://client-site.com"
+                                />
                             </div>
                             <div className="modal-actions">
                                 <button type="submit" className="save-btn">Initialize Asset</button>
@@ -141,7 +151,8 @@ function AdManagement() {
                                     <Sparkles size={14} /> SPONSORED INTELLIGENCE • {ad.position?.toUpperCase() || 'BOTH'}
                                 </div>
                                 <h3 className="ad-title">{ad.caption || 'No Caption Provided'}</h3>
-                                <p className="ad-url">{ad.image_url}</p>
+                                <p className="ad-url text-xs text-blue-400 mt-1 truncate">{ad.target_url || 'No redirect URL'}</p>
+                                <p className="ad-url text-xs text-slate-500 mt-1 truncate">{ad.image_url}</p>
                             </div>
                         </div>
                     ))}
