@@ -13,7 +13,7 @@ function ArticleManagement() {
     const [editingArticle, setEditingArticle] = useState(null);
     const [refreshMessage, setRefreshMessage] = useState('');
 
-    const categories = ['All', 'AI & Machine Learning', 'Business & Economy', 'Defense & Security', 'Entertainment', 'Politics', 'Science & Health', 'Sports', 'Technology', 'World News', 'India / Local News'];
+    const categories = ['All', 'AI & Machine Learning', 'Business & Economy', 'Defense & Security', 'Entertainment', 'Politics', 'Science & Health', 'Sports', 'Technology', 'World News', 'India / Local News', 'Education Policy & Govt Updates', 'Exams & Results', 'Scholarships & Internships', 'Career & Placement News', 'Study Abroad Updates', 'AI & Tech for Students'];
 
     useEffect(() => {
         fetchArticles();

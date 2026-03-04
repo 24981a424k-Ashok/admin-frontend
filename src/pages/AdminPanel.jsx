@@ -69,6 +69,10 @@ function AdminPanel() {
               <span>{item.name}</span>
             </Link>
           ))}
+          <a href="http://localhost:5000/student-news" className="nav-link" target="_blank" rel="noreferrer">
+            <div className="nav-icon-box"><BookOpen size={20} /></div>
+            <span>Student Portal View</span>
+          </a>
         </nav>
 
         <div className="sidebar-footer">
