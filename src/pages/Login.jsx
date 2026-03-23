@@ -27,7 +27,8 @@ function Login({ setUser }) {
 
       if (res.data.status === 'success') {
         if (!res.data.token && res.data.role === 'user') {
-          alert("Authenticated as External Personnel. Redirecting to Public Feed.");
+          const debugMsg = res.data.debug ? `\n\nDEBUG INFO: ${res.data.debug}` : "";
+          alert("Authenticated as External Personnel. Redirecting to Public Feed." + debugMsg);
         } else {
           alert("Admin Connection Established. Welcome Commander.");
         }
