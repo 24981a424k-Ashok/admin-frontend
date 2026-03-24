@@ -2,8 +2,8 @@
     "version": 2,
     "rewrites": [
         {
-            "source": "/api/:path*",
-            "destination": "https://admin-backend-1dxu.vercel.app/api/:path*"
+            "source": "/api/(.*)",
+            "destination": "https://admin-backend-ruby.vercel.app/api/$1"
         },
         {
             "source": "/(.*)",
