@@ -6,7 +6,7 @@ function AdManagement() {
     const [ads, setAds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddForm, setShowAddForm] = useState(false);
-    const [newAd, setNewAd] = useState({ image_url: '', caption: '', position: 'both', target_node: 'Global', target_url: '' });
+    const [newAd, setNewAd] = useState({ image_url: '', caption: '', position: 'both', target_node: 'Global', target_url: '', target_platform: 'both' });
 
     useEffect(() => {
         fetchAds();
@@ -34,7 +34,7 @@ function AdManagement() {
             await axios.post('/api/ads', newAd, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setNewAd({ image_url: '', caption: '', position: 'both', target_node: 'Global', target_url: '' });
+            setNewAd({ image_url: '', caption: '', position: 'both', target_node: 'Global', target_url: '', target_platform: 'both' });
             setShowAddForm(false);
             fetchAds();
         } catch (err) {
@@ -109,6 +109,19 @@ function AdManagement() {
                                 </select>
                             </div>
                             <div className="input-group">
+                                <label>Deployment Target</label>
+                                <select
+                                    className="glass-select"
+                                    value={newAd.target_platform}
+                                    onChange={(e) => setNewAd({ ...newAd, target_platform: e.target.value })}
+                                    style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border)', padding: '0.8rem', borderRadius: '12px', color: 'white' }}
+                                >
+                                    <option value="both">Both Platforms</option>
+                                    <option value="main">Main Website Only</option>
+                                    <option value="student">Student Portal Only</option>
+                                </select>
+                            </div>
+                            <div className="input-group">
                                 <label>Target Redirection URL (Optional)</label>
                                 <input
                                     type="text"
@@ -148,7 +161,7 @@ function AdManagement() {
                             </div>
                             <div className="ad-meta">
                                 <div className="sponsored-tag">
-                                    <Sparkles size={14} /> SPONSORED INTELLIGENCE • {ad.position?.toUpperCase() || 'BOTH'}
+                                    <Sparkles size={14} /> SPONSORED • {ad.position?.toUpperCase()} • {ad.target_platform?.toUpperCase() || 'BOTH'}
                                 </div>
                                 <h3 className="ad-title">{ad.caption || 'No Caption Provided'}</h3>
                                 <p className="ad-url text-xs text-blue-400 mt-1 truncate">{ad.target_url || 'No redirect URL'}</p>

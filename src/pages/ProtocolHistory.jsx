@@ -13,15 +13,16 @@ function ProtocolHistory() {
     const fetchHistory = async () => {
         try {
             const token = localStorage.getItem('adminToken');
-            // We fetch all blueprints first to get their IDs, then fetch history for each? 
-            // Better: Let's assume there's a global history or we just fetch for the main blueprint 'Primary'.
             const blueprintsRes = await axios.get('/api/blueprints', {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            const primary = blueprintsRes.data.find(b => b.name === 'Primary') || blueprintsRes.data[0];
-            if (primary) {
-                const historyRes = await axios.get(`/api/blueprints/history/${primary._id}`, {
+            const campaign = blueprintsRes.data.find(b => b.name === 'Campaign Node') || 
+                             blueprintsRes.data.find(b => b.name === 'Main Layout') ||
+                             blueprintsRes.data[0];
+            
+            if (campaign) {
+                const historyRes = await axios.get(`/api/blueprints/history/${campaign._id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setHistory(historyRes.data);

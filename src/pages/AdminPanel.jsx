@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Layout, Settings, History as HistoryIcon, Save, Play, ChevronLeft, LogOut, FileText, Megaphone, BookOpen, Activity } from 'lucide-react';
+import { Layout, Settings, History as HistoryIcon, Save, Play, ChevronLeft, LogOut, FileText, Megaphone, BookOpen, Activity, GraduationCap } from 'lucide-react';
 import BlueprintEditor from '../components/Editor/BlueprintEditor';
 import ArticleManagement from './ArticleManagement';
 import AdManagement from './AdManagement';
 import NewspaperManagement from './NewspaperManagement';
 import DashboardHome from './DashboardHome';
 import ProtocolHistory from './ProtocolHistory';
+import StudentManagement from './StudentManagement';
 
 function AdminPanel() {
   console.log("AdminPanel component is mounting...");
@@ -20,6 +21,7 @@ function AdminPanel() {
     { path: '/admin/articles', name: 'Intelligence Assets', icon: <FileText size={20} /> },
     { path: '/admin/ads', name: 'Campaign Nodes', icon: <Megaphone size={20} /> },
     { path: '/admin/newspapers', name: 'Source Nodes', icon: <BookOpen size={20} /> },
+    { path: '/admin/student', name: 'Student Intelligence', icon: <GraduationCap size={20} /> },
     { path: '/admin/history', name: 'Protocol History', icon: <HistoryIcon size={20} /> },
   ];
 
@@ -69,7 +71,7 @@ function AdminPanel() {
               <span>{item.name}</span>
             </Link>
           ))}
-          <a href="http://localhost:5000/student-news" className="nav-link" target="_blank" rel="noreferrer">
+          <a href="/student-news" className="nav-link" target="_blank" rel="noreferrer">
             <div className="nav-icon-box"><BookOpen size={20} /></div>
             <span>Student Portal View</span>
           </a>
@@ -93,6 +95,7 @@ function AdminPanel() {
           <Route path="articles" element={<ArticleManagement />} />
           <Route path="ads" element={<AdManagement />} />
           <Route path="newspapers" element={<NewspaperManagement />} />
+          <Route path="student" element={<StudentManagement />} />
           <Route path="history" element={<ProtocolHistory />} />
           <Route path="settings" element={<div className="p-4" style={{ color: 'white' }}>Settings coming soon...</div>} />
         </Routes>
