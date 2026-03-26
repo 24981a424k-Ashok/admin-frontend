@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
     Search, GraduationCap, Filter, ExternalLink, Calendar, 
-    Plus, X, Image as ImageIcon, CheckCircle2, AlertCircle,
-    ArrowRight, Loader2, Sparkles, Megaphone, Globe, Zap
+    Plus, X, Image as ImageIcon, CheckCircle2, AlertCircle, 
+    ArrowRight, Loader2, Sparkles, Megaphone, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -33,11 +33,11 @@ function StudentManagement() {
         setLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.get(`/api/articles?category=${category}`, {
+            const res = await axios.get(`/api/articles?category=${encodeURIComponent(category)}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const items = res.data.articles || res.data;
-            const sortedItems = Array.isArray(items) ? items.sort((a,b) => new Date(b.published_at) - new Date(a.published_at)) : [];
+            const sortedItems = Array.isArray(items) ? items.sort((a,b) => (b.impact_score || 0) - (a.impact_score || 0) || new Date(b.published_at) - new Date(a.published_at)) : [];
             setArticles(sortedItems);
         } catch (err) {
             console.error("Failed to fetch student articles", err);
@@ -56,9 +56,9 @@ function StudentManagement() {
             alert("Please fill all mission-critical fields");
             return false;
         }
-        const wordCount = newArticle.description.trim() ? newArticle.description.trim().split(/\s+/).length : 0;
-        if (wordCount < 100) {
-            alert(`Intelligence depth insufficient. Current count: ${wordCount} words. Requirement: 100+ words.`);
+        const words = newArticle.description.trim() ? newArticle.description.trim().split(/\s+/).length : 0;
+        if (words < 10) {
+            alert(`Intelligence depth low. Please provide at least 10 words.`);
             return false;
         }
         return true;
@@ -144,7 +144,7 @@ function StudentManagement() {
                     <div className="grid-container">
                         {articles.length === 0 ? (
                             <div style={{ colSpan: 'all', textAlign: 'center', padding: '100px', ...s.glass, gridColumn: '1 / -1' }}>
-                                <Globe size={48} color="#222" style={{ marginBottom: '20px' }} />
+                                <Search size={48} color="#222" style={{ marginBottom: '20px' }} />
                                 <h3 style={{ color: '#444', fontSize: '24px' }}>No active intelligence in this sector.</h3>
                             </div>
                         ) : (
@@ -158,7 +158,7 @@ function StudentManagement() {
                                     </div>
                                     <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                                         <h3 style={{ fontSize: '18px', fontWeight: 800, lineHeight: 1.3, marginBottom: '12px' }}>{article.title}</h3>
-                                        <p style={{ color: '#888', fontSize: '13px', lineHeight: 1.6, marginBottom: '24px', flex: 1 }}>{article.summary}</p>
+                                        <p style={{ color: '#888', fontSize: '13px', lineHeight: 1.6, marginBottom: '24px', flex: 1 }}>{article.summary || article.content}</p>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#333' }}></div>
@@ -196,8 +196,8 @@ function StudentManagement() {
                                     </div>
                                     <div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                            <span style={{ fontSize: '10px', fontWeight: 800, color: '#444' }}>INTEL DEPTH (MIN 100 WORDS)</span>
-                                            <span style={{ fontSize: '10px', fontWeight: 800, color: newArticle.description.split(/\s+/).length >= 100 ? '#34a853' : '#444' }}>
+                                            <span style={{ fontSize: '10px', fontWeight: 800, color: '#444' }}>INTEL DEPTH (MIN 10 WORDS)</span>
+                                            <span style={{ fontSize: '10px', fontWeight: 800, color: newArticle.description.trim().split(/\s+/).length >= 10 ? '#34a853' : '#444' }}>
                                                 {newArticle.description.trim() ? newArticle.description.trim().split(/\s+/).length : 0} WORDS
                                             </span>
                                         </div>
