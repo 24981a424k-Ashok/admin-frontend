@@ -3,7 +3,7 @@ import axios from 'axios';
 import { 
     Search, GraduationCap, Filter, ExternalLink, Calendar, 
     Plus, X, Image as ImageIcon, CheckCircle2, AlertCircle, 
-    ArrowRight, Loader2, Sparkles, Megaphone, Zap
+    ArrowRight, Loader2, Sparkles, Megaphone, Zap, Trash2, Edit3, Link as LinkIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -20,8 +20,10 @@ function StudentManagement() {
         image_url: '',
         description: '',
         redirect_url: '',
+        access_link: '',
         category: 'Scholarships & Internships'
     });
+    const [editId, setEditId] = useState(null);
 
     const categories = ["All", "Scholarships & Internships", "Exams & Results", "Policy & Research", "Admissions & Courses", "Campus Life", "Career & Jobs"];
 
@@ -47,8 +49,35 @@ function StudentManagement() {
     };
 
     const handleAddClick = () => {
-        setNewArticle({ title: '', image_url: '', description: '', redirect_url: '', category: 'Scholarships & Internships' });
+        setNewArticle({ title: '', image_url: '', description: '', redirect_url: '', access_link: '', category: 'Scholarships & Internships' });
+        setEditId(null);
         setShowAddModal(true);
+    };
+
+    const handleEditClick = (article) => {
+        setNewArticle({
+            title: article.title,
+            image_url: article.image_url,
+            description: article.content || article.summary,
+            redirect_url: article.url || article.redirect_url,
+            access_link: article.access_link || (article.analysis ? article.analysis.access_link : ''),
+            category: article.category
+        });
+        setEditId(article.id);
+        setShowAddModal(true);
+    };
+
+    const handleDeleteClick = async (id) => {
+        if (!window.confirm("Are you sure you want to terminate this intelligence node?")) return;
+        try {
+            const token = localStorage.getItem('adminToken');
+            await axios.delete(`/api/articles/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchArticles();
+        } catch (err) {
+            alert("Deletion failed.");
+        }
     };
 
     const validateFirstStep = () => {
@@ -57,8 +86,8 @@ function StudentManagement() {
             return false;
         }
         const words = newArticle.description.trim() ? newArticle.description.trim().split(/\s+/).length : 0;
-        if (words < 10) {
-            alert(`Intelligence depth low. Please provide at least 10 words.`);
+        if (words < 2 || words > 100) {
+            alert(`Intelligence depth must be between 2 and 100 words (Current: ${words}).`);
             return false;
         }
         return true;
@@ -76,12 +105,18 @@ function StudentManagement() {
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem('adminToken');
-            await axios.post('/api/student/articles', newArticle, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            if (editId) {
+                await axios.put(`/api/articles/${editId}`, newArticle, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } else {
+                await axios.post('/api/student/articles', newArticle, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
             setShowPublishModal(false);
             fetchArticles();
-            alert("Intelligence Node Deployed Successfully!");
+            alert(editId ? "Intelligence Node Updated!" : "Intelligence Node Deployed Successfully!");
         } catch (err) {
             alert("Deployment failure. Check connection.");
         } finally {
@@ -157,12 +192,18 @@ function StudentManagement() {
                                         </div>
                                     </div>
                                     <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                        <h3 style={{ fontSize: '18px', fontWeight: 800, lineHeight: 1.3, marginBottom: '12px' }}>{article.title}</h3>
-                                        <p style={{ color: '#888', fontSize: '13px', lineHeight: 1.6, marginBottom: '24px', flex: 1 }}>{article.summary || article.content}</p>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                                            <h3 style={{ fontSize: '18px', fontWeight: 800, lineHeight: 1.3, margin: 0 }}>{article.title}</h3>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button onClick={() => handleEditClick(article)} style={{ background: 'transparent', border: 'none', color: '#666', cursor: 'pointer', padding: '4px' }}><Edit3 size={16} /></button>
+                                                <button onClick={() => handleDeleteClick(article.id)} style={{ background: 'transparent', border: 'none', color: '#ea4335', cursor: 'pointer', padding: '4px' }}><Trash2 size={16} /></button>
+                                            </div>
+                                        </div>
+                                        <p style={{ color: '#888', fontSize: '13px', lineHeight: 1.6, marginBottom: '24px', flex: 1, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{article.summary || article.content}</p>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#333' }}></div>
-                                                <span style={{ fontSize: '11px', fontWeight: 700, color: '#444' }}>{article.authority || 'SOURCE NODE'}</span>
+                                                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>{article.authority?.charAt(0) || 'S'}</div>
+                                                <span style={{ fontSize: '11px', fontWeight: 700, color: '#666' }}>{article.authority || 'SOURCE NODE'}</span>
                                             </div>
                                             <a href={article.url} target="_blank" rel="noreferrer" style={{ color: '#4285f4' }}><ExternalLink size={18} /></a>
                                         </div>
@@ -183,7 +224,7 @@ function StudentManagement() {
                             <div style={{ padding: '40px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
                                     <div>
-                                        <h2 style={{ fontSize: '28px', fontWeight: 900, margin: 0 }}>Create Intelligence Node</h2>
+                                        <h2 style={{ fontSize: '28px', fontWeight: 900, margin: 0 }}>{editId ? 'Modify Intelligence Node' : 'Create Intelligence Node'}</h2>
                                         <p style={{ color: '#666', fontSize: '14px' }}>Step 1: Core Configuration</p>
                                     </div>
                                     <button onClick={() => setShowAddModal(false)} style={{ background: 'transparent', border: 'none', color: '#444', cursor: 'pointer' }}><X /></button>
@@ -194,10 +235,11 @@ function StudentManagement() {
                                         <input style={s.input} placeholder="Image URL" value={newArticle.image_url} onChange={e => setNewArticle({...newArticle, image_url: e.target.value})} />
                                         <input style={s.input} placeholder="Target Redirect URL" value={newArticle.redirect_url} onChange={e => setNewArticle({...newArticle, redirect_url: e.target.value})} />
                                     </div>
+                                    <input style={s.input} placeholder="Access Link (Apply/Register Button)" value={newArticle.access_link} onChange={e => setNewArticle({...newArticle, access_link: e.target.value})} />
                                     <div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                            <span style={{ fontSize: '10px', fontWeight: 800, color: '#444' }}>INTEL DEPTH (MIN 10 WORDS)</span>
-                                            <span style={{ fontSize: '10px', fontWeight: 800, color: newArticle.description.trim().split(/\s+/).length >= 10 ? '#34a853' : '#444' }}>
+                                            <span style={{ fontSize: '10px', fontWeight: 800, color: '#444' }}>INTEL DEPTH (2 - 100 WORDS)</span>
+                                            <span style={{ fontSize: '10px', fontWeight: 800, color: (newArticle.description.trim().split(/\s+/).length >= 2 && newArticle.description.trim().split(/\s+/).length <= 100) ? '#34a853' : '#ea4335' }}>
                                                 {newArticle.description.trim() ? newArticle.description.trim().split(/\s+/).length : 0} WORDS
                                             </span>
                                         </div>

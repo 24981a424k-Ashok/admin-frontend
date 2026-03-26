@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Image as ImageIcon, Link as LinkIcon, Type, X, Upload, CheckCircle2, AlertCircle, Loader2, Smartphone, Eye, Megaphone, Trash2, Sparkles } from 'lucide-react';
+import { Save, Image as ImageIcon, Link as LinkIcon, Type, X, Upload, CheckCircle2, AlertCircle, Loader2, Smartphone, Eye, Megaphone, Trash2, Sparkles, Globe } from 'lucide-react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -51,6 +51,11 @@ function BlueprintEditor() {
     };
 
     const handleSave = async (publish = false) => {
+        const words = campaign.headline.trim() ? campaign.headline.trim().split(/\s+/) : [];
+        if (words.length < 2) {
+            setStatus({ type: 'error', message: 'Min 2 words required!' });
+            return;
+        }
         setIsSaving(true);
         setStatus(null);
         try {
@@ -130,14 +135,14 @@ function BlueprintEditor() {
                     {/* Form Section */}
                     <div style={{ ...s.glass, padding: '40px' }}>
                         <div style={{ marginBottom: '32px' }}>
-                            <label style={s.label}><Type size={12} style={{ marginRight: '8px' }} /> Protocol Headline</label>
+                            <label style={s.label}><Type size={12} style={{ marginRight: '8px' }} /> Campaign Description</label>
                             <div style={{ position: 'relative' }}>
                                 <Type style={{ position: 'absolute', left: '16px', top: '16px', color: '#444' }} size={18} />
                                 <textarea style={{ ...s.input, height: '120px', resize: 'none' }} placeholder="Mission-critical headline..." value={campaign.headline} onChange={handleHeadlineChange} />
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', fontSize: '10px', color: '#444', fontWeight: 800 }}>
-                                <span>SYSTEM RESTRICTION: 100 WORDS</span>
-                                <span style={{ color: wordCount >= 90 ? '#ea4335' : '#4285f4' }}>{wordCount} / 100</span>
+                                <span>SYSTEM RESTRICTION: 2 - 100 WORDS</span>
+                                <span style={{ color: (wordCount < 2 || wordCount >= 90) ? '#ea4335' : '#4285f4' }}>{wordCount} / 100</span>
                             </div>
                         </div>
 
@@ -152,10 +157,14 @@ function BlueprintEditor() {
                         <div style={{ marginBottom: 32 }}>
                             <label style={s.label}><Globe size={12} style={{ marginRight: '8px' }} /> Deployment Scope</label>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-                                {['main', 'student', 'both'].map(p => (
-                                    <div key={p} onClick={() => setCampaign({ ...campaign, target_platform: p })} 
-                                        style={{ padding: '12px', textAlign: 'center', borderRadius: '12px', border: '1px solid', borderColor: campaign.target_platform === p ? '#4285f4' : 'rgba(255,255,255,0.1)', background: campaign.target_platform === p ? 'rgba(66,133,244,0.1)' : 'transparent', color: campaign.target_platform === p ? '#4285f4' : '#666', fontSize: '12px', fontWeight: 800, cursor: 'pointer', textTransform: 'uppercase' }}>
-                                        {p}
+                                {[
+                                    { id: 'main', label: 'Dashboard' },
+                                    { id: 'student', label: 'Student' },
+                                    { id: 'both', label: 'Both' }
+                                ].map(p => (
+                                    <div key={p.id} onClick={() => setCampaign({ ...campaign, target_platform: p.id })} 
+                                        style={{ padding: '12px', textAlign: 'center', borderRadius: '12px', border: '1px solid', borderColor: campaign.target_platform === p.id ? '#4285f4' : 'rgba(255,255,255,0.1)', background: campaign.target_platform === p.id ? 'rgba(66,133,244,0.1)' : 'transparent', color: campaign.target_platform === p.id ? '#4285f4' : '#666', fontSize: '10px', fontWeight: 800, cursor: 'pointer', textTransform: 'uppercase' }}>
+                                        {p.label}
                                     </div>
                                 ))}
                             </div>
