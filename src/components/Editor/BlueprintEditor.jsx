@@ -8,6 +8,7 @@ function BlueprintEditor() {
         headline: '',
         imageUrl: '',
         targetUrl: '',
+        target_platform: 'both',
         is_published: false
     });
     const [isSaving, setIsSaving] = useState(false);
@@ -21,8 +22,14 @@ function BlueprintEditor() {
                 const res = await axios.get('/api/blueprints/active');
                 if (res.data && res.data.structure && res.data.structure.type === 'campaign') {
                     const content = res.data.structure.content;
-                    setCampaign(content);
-                    updateWordCount(content.headline);
+                    setCampaign({
+                        headline: content.headline || '',
+                        imageUrl: content.imageUrl || '',
+                        targetUrl: content.targetUrl || '',
+                        target_platform: content.target_platform || 'both',
+                        is_published: content.is_published || false
+                    });
+                    updateWordCount(content.headline || '');
                 }
             } catch (err) { console.error("Load failed", err); }
         };
@@ -139,6 +146,18 @@ function BlueprintEditor() {
                             <div style={{ position: 'relative' }}>
                                 <ImageIcon style={{ position: 'absolute', left: '16px', top: '16px', color: '#444' }} size={18} />
                                 <input style={s.input} type="text" placeholder="https://cdn.platform.com/asset.png" value={campaign.imageUrl} onChange={e => setCampaign({ ...campaign, imageUrl: e.target.value })} />
+                            </div>
+                        </div>
+
+                        <div style={{ marginBottom: 32 }}>
+                            <label style={s.label}><Globe size={12} style={{ marginRight: '8px' }} /> Deployment Scope</label>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                                {['main', 'student', 'both'].map(p => (
+                                    <div key={p} onClick={() => setCampaign({ ...campaign, target_platform: p })} 
+                                        style={{ padding: '12px', textAlign: 'center', borderRadius: '12px', border: '1px solid', borderColor: campaign.target_platform === p ? '#4285f4' : 'rgba(255,255,255,0.1)', background: campaign.target_platform === p ? 'rgba(66,133,244,0.1)' : 'transparent', color: campaign.target_platform === p ? '#4285f4' : '#666', fontSize: '12px', fontWeight: 800, cursor: 'pointer', textTransform: 'uppercase' }}>
+                                        {p}
+                                    </div>
+                                ))}
                             </div>
                         </div>
 

@@ -3,8 +3,9 @@ import axios from 'axios';
 import { 
     Search, GraduationCap, Filter, ExternalLink, Calendar, 
     Plus, X, Image as ImageIcon, CheckCircle2, AlertCircle,
-    ArrowRight, Loader2, Sparkles
+    ArrowRight, Loader2, Sparkles, Megaphone, Globe, Zap
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function StudentManagement() {
     const [articles, setArticles] = useState([]);
@@ -36,7 +37,6 @@ function StudentManagement() {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const items = res.data.articles || res.data;
-            // Ensure they are sorted by date desc if backend didn't
             const sortedItems = Array.isArray(items) ? items.sort((a,b) => new Date(b.published_at) - new Date(a.published_at)) : [];
             setArticles(sortedItems);
         } catch (err) {
@@ -47,17 +47,18 @@ function StudentManagement() {
     };
 
     const handleAddClick = () => {
+        setNewArticle({ title: '', image_url: '', description: '', redirect_url: '', category: 'Scholarships & Internships' });
         setShowAddModal(true);
     };
 
     const validateFirstStep = () => {
-        if (!newArticle.title || !newArticle.image_url || !newArticle.redirect_url) {
-            alert("Please fill all fields");
+        if (!newArticle.title || !newArticle.image_url || !newArticle.redirect_url || !newArticle.description) {
+            alert("Please fill all mission-critical fields");
             return false;
         }
-        const wordCount = newArticle.description.trim().split(/\s+/).length;
+        const wordCount = newArticle.description.trim() ? newArticle.description.trim().split(/\s+/).length : 0;
         if (wordCount < 100) {
-            alert(`Description must be at least 100 words. Current count: ${wordCount}`);
+            alert(`Intelligence depth insufficient. Current count: ${wordCount} words. Requirement: 100+ words.`);
             return false;
         }
         return true;
@@ -79,239 +80,169 @@ function StudentManagement() {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setShowPublishModal(false);
-            setNewArticle({ title: '', image_url: '', description: '', redirect_url: '', category: 'Scholarships & Internships' });
             fetchArticles();
-            alert("Article published successfully to Student Portal!");
+            alert("Intelligence Node Deployed Successfully!");
         } catch (err) {
-            alert("Failed to publish article");
+            alert("Deployment failure. Check connection.");
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    // --- PREMIUM INLINE STYLES ---
+    const s = {
+        page: { background: '#050505', minHeight: '100vh', color: '#fff', padding: '40px', fontFamily: "'Outfit', 'Inter', sans-serif" },
+        glass: { background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(40px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '32px' },
+        card: { background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '28px', overflow: 'hidden', transition: 'all 0.4s ease', display: 'flex', flexDirection: 'column' },
+        input: { background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '16px', color: '#fff', width: '100%', outline: 'none', fontSize: '14px' },
+        btnPri: { background: '#fff', color: '#000', border: 'none', padding: '14px 28px', borderRadius: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' },
+        badge: { background: 'rgba(66,133,244,0.1)', color: '#4285f4', padding: '4px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' },
+        modal: { position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }
+    };
+
     return (
-        <div className="student-management-premium p-8 max-w-7xl mx-auto">
-            <header className="flex items-center justify-between mb-12">
-                <div>
-                    <h2 className="text-4xl font-black text-white mb-2 tracking-tight flex items-center gap-4">
-                        <div className="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-500/20">
-                            <GraduationCap size={32} />
+        <div style={s.page}>
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap');
+                body { margin: 0; background: #050505; }
+                .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px; }
+                .art-card:hover { transform: translateY(-8px); border-color: rgba(66,133,244,0.4) !important; background: rgba(255,255,255,0.05) !important; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+                .cat-pill { padding: 12px 24px; border-radius: 100px; font-weight: 700; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: #888; transition: all 0.3s; white-space: nowrap; }
+                .cat-pill.active { background: #4285f4; color: #fff; border-color: #4285f4; box-shadow: 0 10px 25px rgba(66,133,244,0.3); }
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                textarea:focus, input:focus { border-color: #4285f4 !important; background: rgba(66,133,244,0.05) !important; }
+            `}</style>
+
+            <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '60px' }}>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px' }}>
+                            <div style={{ background: '#4285f4', padding: '10px', borderRadius: '16px' }}><GraduationCap size={32} color="#fff" /></div>
+                            <h1 style={{ fontSize: '42px', fontWeight: 900, letterSpacing: '-1.5px', margin: 0 }}>Student Intelligence</h1>
                         </div>
-                        Student Intelligence Hub
-                    </h2>
-                    <p className="text-slate-400 text-lg">Orchestrate premium opportunities and global notifications.</p>
-                </div>
-                <button 
-                    onClick={handleAddClick}
-                    className="flex items-center gap-3 bg-white text-black px-8 py-4 rounded-2xl font-bold hover:bg-blue-50 transition-all active:scale-95 shadow-xl"
-                >
-                    <Plus size={24} /> New Manual Article
-                </button>
-            </header>
-
-            {/* Category Filter */}
-            <div className="flex gap-3 mb-12 overflow-x-auto pb-4 no-scrollbar">
-                {categories.map(cat => (
-                    <button
-                        key={cat}
-                        onClick={() => setCategory(cat)}
-                        className={`px-8 py-3 rounded-2xl font-bold transition-all whitespace-nowrap border-2 ${
-                            category === cat 
-                            ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/20' 
-                            : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-600'
-                        }`}
-                    >
-                        {cat}
+                        <p style={{ color: '#666', fontSize: '18px', margin: 0, fontWeight: 500 }}>Global Sector Monitoring & Opportunity Deployment</p>
+                    </div>
+                    <button onClick={handleAddClick} style={s.btnPri}>
+                        <Plus size={20} /> Deploy Manual Article
                     </button>
-                ))}
-            </div>
+                </header>
 
-            {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {[1, 2, 3, 4, 5, 6].map(i => (
-                        <div key={i} className="bg-slate-900/50 border border-slate-800 h-[450px] rounded-3xl animate-pulse"></div>
+                {/* Filters */}
+                <div className="no-scrollbar" style={{ display: 'flex', gap: '12px', overflowX: 'auto', marginBottom: '48px', paddingBottom: '10px' }}>
+                    {categories.map(cat => (
+                        <div key={cat} onClick={() => setCategory(cat)} className={`cat-pill ${category === cat ? 'active' : ''}`}>
+                            {cat}
+                        </div>
                     ))}
                 </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {articles.length === 0 ? (
-                        <div className="col-span-full py-32 text-center bg-slate-900/30 rounded-3xl border-2 border-dashed border-slate-800">
-                            <GraduationCap size={64} className="mx-auto mb-6 text-slate-700" />
-                            <p className="text-2xl font-bold text-slate-500">No intelligence found for this sector.</p>
-                        </div>
-                    ) : (
-                        articles.map(article => (
-                            <div key={article.id} className="group relative bg-slate-900 border border-slate-800 rounded-[2rem] overflow-hidden hover:border-blue-500/50 transition-all duration-500 flex flex-col hover:shadow-2xl hover:shadow-blue-500/10">
-                                <div className="h-56 relative overflow-hidden">
-                                    <img 
-                                        src={article.image_url || 'https://images.unsplash.com/photo-1523050853063-913ec98ceed6?auto=format&fit=crop&w=800&q=80'} 
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80"
-                                        alt={article.title}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
-                                    <div className="absolute top-6 left-6">
-                                        <span className="bg-blue-600/90 backdrop-blur-md text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg">
-                                            {article.category}
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <div className="p-8 flex flex-col flex-1">
-                                    <h3 className="text-xl font-bold text-white mb-4 line-clamp-2 leading-tight group-hover:text-blue-400 transition-colors">
-                                        {article.title}
-                                    </h3>
-                                    <p className="text-slate-400 text-sm mb-8 line-clamp-4 leading-relaxed">
-                                        {article.summary || article.content}
-                                    </p>
-                                    
-                                    <div className="mt-auto pt-6 border-t border-slate-800 flex items-center justify-between">
-                                        <div className="flex flex-col">
-                                            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Intelligence Source</span>
-                                            <span className="text-sm text-slate-200 font-bold">{article.authority || 'Global Intel'}</span>
+
+                {loading ? (
+                    <div className="grid-container">
+                        {[1,2,3,4,5,6].map(i => <div key={i} style={{ ...s.card, height: '400px', opacity: 0.1 }}></div>)}
+                    </div>
+                ) : (
+                    <div className="grid-container">
+                        {articles.length === 0 ? (
+                            <div style={{ colSpan: 'all', textAlign: 'center', padding: '100px', ...s.glass, gridColumn: '1 / -1' }}>
+                                <Globe size={48} color="#222" style={{ marginBottom: '20px' }} />
+                                <h3 style={{ color: '#444', fontSize: '24px' }}>No active intelligence in this sector.</h3>
+                            </div>
+                        ) : (
+                            articles.map(article => (
+                                <div key={article.id} className="art-card" style={s.card}>
+                                    <div style={{ height: '200px', overflow: 'hidden', position: 'relative' }}>
+                                        <img src={article.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
+                                        <div style={{ position: 'absolute', top: '16px', left: '16px' }}>
+                                            <span style={s.badge}>{article.category}</span>
                                         </div>
-                                        <a 
-                                            href={article.url} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="p-4 bg-slate-800 rounded-2xl text-white hover:bg-blue-600 transition-all shadow-lg"
-                                        >
-                                            <ExternalLink size={20} />
-                                        </a>
+                                    </div>
+                                    <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                        <h3 style={{ fontSize: '18px', fontWeight: 800, lineHeight: 1.3, marginBottom: '12px' }}>{article.title}</h3>
+                                        <p style={{ color: '#888', fontSize: '13px', lineHeight: 1.6, marginBottom: '24px', flex: 1 }}>{article.summary}</p>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#333' }}></div>
+                                                <span style={{ fontSize: '11px', fontWeight: 700, color: '#444' }}>{article.authority || 'SOURCE NODE'}</span>
+                                            </div>
+                                            <a href={article.url} target="_blank" rel="noreferrer" style={{ color: '#4285f4' }}><ExternalLink size={18} /></a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-            )}
-
-            {/* Add Article Modal */}
-            {showAddModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl">
-                    <div className="bg-slate-900 w-full max-w-2xl rounded-[2.5rem] border border-slate-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-                        <div className="p-10">
-                            <div className="flex justify-between items-center mb-10">
-                                <div>
-                                    <h2 className="text-3xl font-black text-white mb-2">New Intelligence Asset</h2>
-                                    <p className="text-slate-400">Step 1: Core Configuration</p>
-                                </div>
-                                <button onClick={() => setShowAddModal(false)} className="p-3 hover:bg-slate-800 rounded-2xl text-slate-400 transition-colors">
-                                    <X size={24} />
-                                </button>
-                            </div>
-
-                            <form onSubmit={handleContinueToPublish} className="space-y-6">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Asset Headline</label>
-                                    <input 
-                                        type="text"
-                                        className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl p-4 text-white placeholder:text-slate-600 focus:border-blue-500 transition-all outline-none"
-                                        placeholder="Enter a compelling headline..."
-                                        value={newArticle.title}
-                                        onChange={e => setNewArticle({...newArticle, title: e.target.value})}
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Image Address</label>
-                                        <input 
-                                            type="text"
-                                            className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl p-4 text-white outline-none focus:border-blue-500"
-                                            placeholder="https://..."
-                                            value={newArticle.image_url}
-                                            onChange={e => setNewArticle({...newArticle, image_url: e.target.value})}
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Redirect Link</label>
-                                        <input 
-                                            type="text"
-                                            className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl p-4 text-white outline-none focus:border-blue-500"
-                                            placeholder="https://..."
-                                            value={newArticle.redirect_url}
-                                            onChange={e => setNewArticle({...newArticle, redirect_url: e.target.value})}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Detailed Intelligence (Min 100 Words)</label>
-                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${newArticle.description.split(/\s+/).length >= 100 ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}>
-                                            Word Count: {newArticle.description.trim() ? newArticle.description.trim().split(/\s+/).length : 0}
-                                        </span>
-                                    </div>
-                                    <textarea 
-                                        className="w-full bg-slate-800/50 border border-slate-700 rounded-3xl p-6 text-white h-48 focus:border-blue-500 transition-all outline-none resize-none leading-relaxed"
-                                        placeholder="Describe the opportunity or news in detail..."
-                                        value={newArticle.description}
-                                        onChange={e => setNewArticle({...newArticle, description: e.target.value})}
-                                    />
-                                </div>
-
-                                <button 
-                                    type="submit"
-                                    className="w-full py-5 bg-white text-black font-black rounded-2xl hover:bg-blue-50 transition-all flex items-center justify-center gap-3 shadow-xl"
-                                >
-                                    Continue to Deployment <ArrowRight size={20} />
-                                </button>
-                            </form>
-                        </div>
+                            ))
+                        )}
                     </div>
-                </div>
-            )}
+                )}
+            </div>
 
-            {/* Publish Modal */}
-            {showPublishModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl">
-                    <div className="bg-slate-900 w-full max-w-lg rounded-[2.5rem] border border-slate-800 shadow-2xl overflow-hidden">
-                        <div className="p-10 text-center">
-                            <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-blue-500/30">
-                                <Sparkles size={40} className="text-white" />
-                            </div>
-                            <h2 className="text-3xl font-black text-white mb-2">Final Deployment</h2>
-                            <p className="text-slate-400 mb-10">Assign a sector for this intelligence.</p>
-
-                            <div className="space-y-3 mb-10">
-                                {categories.slice(1).map(cat => (
-                                    <button 
-                                        key={cat}
-                                        onClick={() => setNewArticle({...newArticle, category: cat})}
-                                        className={`w-full p-4 rounded-2xl font-bold border-2 transition-all text-left flex items-center justify-between ${
-                                            newArticle.category === cat 
-                                            ? 'bg-blue-600/10 border-blue-600 text-blue-400' 
-                                            : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:border-slate-600'
-                                        }`}
-                                    >
-                                        {cat}
-                                        {newArticle.category === cat && <CheckCircle2 size={20} />}
+            {/* MODALS WITHOUT OVERLAP */}
+            <AnimatePresence>
+                {showAddModal && (
+                    <div style={s.modal} onClick={() => setShowAddModal(false)}>
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                            style={{ ...s.glass, background: '#0a0a0a', width: '100%', maxWidth: '700px', cursor: 'default' }} onClick={e => e.stopPropagation()}>
+                            <div style={{ padding: '40px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
+                                    <div>
+                                        <h2 style={{ fontSize: '28px', fontWeight: 900, margin: 0 }}>Create Intelligence Node</h2>
+                                        <p style={{ color: '#666', fontSize: '14px' }}>Step 1: Core Configuration</p>
+                                    </div>
+                                    <button onClick={() => setShowAddModal(false)} style={{ background: 'transparent', border: 'none', color: '#444', cursor: 'pointer' }}><X /></button>
+                                </div>
+                                <div style={{ display: 'grid', gap: '24px' }}>
+                                    <input style={s.input} placeholder="Mission Headline" value={newArticle.title} onChange={e => setNewArticle({...newArticle, title: e.target.value})} />
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                        <input style={s.input} placeholder="Image URL" value={newArticle.image_url} onChange={e => setNewArticle({...newArticle, image_url: e.target.value})} />
+                                        <input style={s.input} placeholder="Target Redirect URL" value={newArticle.redirect_url} onChange={e => setNewArticle({...newArticle, redirect_url: e.target.value})} />
+                                    </div>
+                                    <div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                            <span style={{ fontSize: '10px', fontWeight: 800, color: '#444' }}>INTEL DEPTH (MIN 100 WORDS)</span>
+                                            <span style={{ fontSize: '10px', fontWeight: 800, color: newArticle.description.split(/\s+/).length >= 100 ? '#34a853' : '#444' }}>
+                                                {newArticle.description.trim() ? newArticle.description.trim().split(/\s+/).length : 0} WORDS
+                                            </span>
+                                        </div>
+                                        <textarea style={{ ...s.input, height: '160px', resize: 'none' }} placeholder="Provide detailed intelligence coverage..." value={newArticle.description} onChange={e => setNewArticle({...newArticle, description: e.target.value})} />
+                                    </div>
+                                    <button onClick={handleContinueToPublish} style={{ ...s.btnPri, background: '#4285f4', color: '#fff', justifyContent: 'center', width: '100%', padding: '18px' }}>
+                                        Analyze & Proceed <ArrowRight size={20} />
                                     </button>
-                                ))}
+                                </div>
                             </div>
-
-                            <div className="flex gap-4">
-                                <button 
-                                    onClick={() => { setShowPublishModal(false); setShowAddModal(true); }}
-                                    className="flex-1 py-4 bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-700 transition-all"
-                                >
-                                    Go Back
-                                </button>
-                                <button 
-                                    onClick={handleFinalPublish}
-                                    disabled={isSubmitting}
-                                    className="flex-1 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-500 transition-all shadow-xl disabled:opacity-50"
-                                >
-                                    {isSubmitting ? 'Deploying...' : 'Deploy Intel'}
-                                </button>
-                            </div>
-                        </div>
+                        </motion.div>
                     </div>
-                </div>
-            )}
+                )}
 
-            <style>{`
-                .no-scrollbar::-webkit-scrollbar { display: none; }
-                .student-management-premium { font-family: 'Inter', sans-serif; }
-            `}</style>
+                {showPublishModal && (
+                    <div style={s.modal} onClick={() => setShowPublishModal(false)}>
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                            style={{ ...s.glass, background: '#0a0a0a', width: '100%', maxWidth: '500px', cursor: 'default', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+                            <div style={{ padding: '48px' }}>
+                                <div style={{ background: 'rgba(66,133,244,0.1)', width: '64px', height: '64px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                                    <Zap color="#4285f4" size={32} />
+                                </div>
+                                <h2 style={{ fontSize: '28px', fontWeight: 900, marginBottom: '8px' }}>Deployment Path</h2>
+                                <p style={{ color: '#555', fontSize: '14px', marginBottom: '32px' }}>Target specific student sector for this node.</p>
+                                
+                                <div style={{ display: 'grid', gap: '10px', marginBottom: '32px' }}>
+                                    {categories.slice(1).map(cat => (
+                                        <div key={cat} onClick={() => setNewArticle({...newArticle, category: cat})} 
+                                            style={{ padding: '16px', borderRadius: '16px', border: '1px solid', borderColor: newArticle.category === cat ? '#4285f4' : 'rgba(255,255,255,0.05)', background: newArticle.category === cat ? 'rgba(66,133,244,0.05)' : 'transparent', color: newArticle.category === cat ? '#4285f4' : '#888', fontWeight: 700, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', display: 'flex', justifyContent: 'space-between' }}>
+                                            {cat} {newArticle.category === cat && <CheckCircle2 size={16} />}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                    <button onClick={() => { setShowPublishModal(false); setShowAddModal(true); }} style={{ ...s.btnPri, background: 'transparent', border: '1px solid #333', color: '#888', justifyContent: 'center' }}>Back</button>
+                                    <button onClick={handleFinalPublish} disabled={isSubmitting} style={{ ...s.btnPri, background: '#4285f4', color: '#fff', justifyContent: 'center' }}>
+                                        {isSubmitting ? <Loader2 className="animate-spin" /> : 'Confirm Deploy'}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
