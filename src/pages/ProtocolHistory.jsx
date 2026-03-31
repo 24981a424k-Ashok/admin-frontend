@@ -13,22 +13,12 @@ function ProtocolHistory() {
     const fetchHistory = async () => {
         try {
             const token = localStorage.getItem('adminToken');
-            const blueprintsRes = await axios.get('/api/blueprints', {
+            const historyRes = await axios.get('/api/history', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
-            const campaign = blueprintsRes.data.find(b => b.name === 'Campaign Node') || 
-                             blueprintsRes.data.find(b => b.name === 'Main Layout') ||
-                             blueprintsRes.data[0];
-            
-            if (campaign) {
-                const historyRes = await axios.get(`/api/blueprints/history/${campaign._id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setHistory(historyRes.data);
-            }
+            setHistory(historyRes.data);
         } catch (err) {
-            console.error('Failed to fetch history:', err);
+            console.error('Failed to fetch protocol history:', err);
         } finally {
             setLoading(false);
         }
@@ -64,21 +54,18 @@ function ProtocolHistory() {
                             </div>
                             <div className="flex-1">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="font-bold text-lg capitalize">{record.action} Protocol</span>
+                                    <div className="flex items-center gap-3">
+                                        <span className="font-bold text-lg capitalize">{record.action} {record.target_type || 'Protocol'}</span>
+                                        <span className="text-xs text-accent-gold bg-gold/10 px-2 py-0.5 rounded border border-gold/20">{record.admin_user}</span>
+                                    </div>
                                     <span className="text-sm text-dim bg-white/5 px-3 py-1 rounded-full flex items-center gap-2">
                                         <Clock size={12} />
                                         {new Date(record.timestamp).toLocaleString()}
                                     </span>
                                 </div>
                                 <p className="text-muted text-sm mb-4">
-                                    Blueprint configuration updated and {record.action === 'publish' ? 'deployed to live edge nodes' : 'saved to local storage'}.
+                                    {record.details || `Administrative action performed on ${record.target_type} #${record.target_id}.`}
                                 </p>
-                                <div className="flex gap-4">
-                                    <button className="text-xs font-bold text-accent uppercase tracking-wider hover:underline">View Snapshot</button>
-                                    {record.action !== 'publish' && (
-                                        <button className="text-xs font-bold text-gold uppercase tracking-wider hover:underline">Restore This Version</button>
-                                    )}
-                                </div>
                             </div>
                         </div>
                     ))

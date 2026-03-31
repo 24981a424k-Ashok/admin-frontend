@@ -8,7 +8,7 @@ function DashboardSelector({ user }) {
   React.useEffect(() => {
     if (user.role !== 'admin') {
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      window.location.href = isLocal ? 'http://localhost:8000/dashboard' : 'https://uni-intel-ml-innovator3.hf.space/dashboard';
+      window.location.href = isLocal ? 'http://localhost:8000/dashboard' : 'https://uni12345-ai-news1.hf.space/dashboard';
     }
   }, [user]);
 
@@ -20,7 +20,7 @@ function DashboardSelector({ user }) {
 
   const goToWebsite = () => {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    window.location.href = isLocal ? 'http://localhost:8000/dashboard' : 'https://uni-intel-ml-innovator3.hf.space/dashboard';
+    window.location.href = isLocal ? 'http://localhost:8000/dashboard' : 'https://uni12345-ai-news1.hf.space/dashboard';
   };
 
   const goToAdmin = () => {

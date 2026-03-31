@@ -26,17 +26,26 @@ function AdminPanel() {
   ];
 
   const handlePublish = async () => {
+    setIsSaving(true);
     try {
-      // For now, we fetch the first blueprint and publish it. 
-      // In a real app, you'd select which one to publish.
       const res = await axios.get('/api/blueprints');
       if (res.data && res.data.length > 0) {
-        const id = res.data[0]._id;
+        // Find the most recent or active blueprint
+        const activeBlueprint = res.data.find(b => b.isActive) || res.data[0];
+        const id = activeBlueprint._id;
+        
         await axios.post(`/api/blueprints/publish/${id}`);
-        alert('Layout published successfully!');
+        // We use both console and alert for maximum visibility during debugging
+        console.log('Blueprint published successfully');
+        alert('SUCCESS: Layout synchronization complete. Changes are now live on the public dashboard.');
+      } else {
+        alert('NOTICE: No blueprint found to publish. Please create a layout in the Blueprint Editor first.');
       }
     } catch (err) {
-      alert('Failed to publish layout');
+      console.error('Publish Error:', err);
+      alert(`ERROR: Deployment failed. ${err.response?.data?.error || err.message}`);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -71,10 +80,6 @@ function AdminPanel() {
               <span>{item.name}</span>
             </Link>
           ))}
-          <a href="/student-news" className="nav-link" target="_blank" rel="noreferrer">
-            <div className="nav-icon-box"><BookOpen size={20} /></div>
-            <span>Student Portal View</span>
-          </a>
         </nav>
 
         <div className="sidebar-footer">
