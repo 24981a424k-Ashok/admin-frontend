@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Plus, Trash2, Image as ImageIcon, Loader2, Sparkles, Megaphone } from 'lucide-react';
 
 function AdManagement() {
@@ -15,10 +15,7 @@ function AdManagement() {
     const fetchAds = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('adminToken');
-            const res = await axios.get('/api/ads', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/api/ads');
             setAds(res.data);
         } catch (err) {
             console.error('Failed to fetch ads:', err);
@@ -30,28 +27,22 @@ function AdManagement() {
     const handleAddAd = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('adminToken');
-            await axios.post('/api/ads', newAd, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post('/api/ads', newAd);
             setNewAd({ image_url: '', caption: '', position: 'both', target_node: 'Global', target_url: '', target_platform: 'both' });
             setShowAddForm(false);
             fetchAds();
         } catch (err) {
-            alert('Failed to add advertisement');
+            alert('Relay Error: Failed to add advertisement');
         }
     };
 
     const handleDeleteAd = async (id) => {
         if (!window.confirm('Remove this advertisement?')) return;
         try {
-            const token = localStorage.getItem('adminToken');
-            await axios.delete(`/api/ads/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/api/ads/${id}`);
             fetchAds();
         } catch (err) {
-            alert('Failed to remove advertisement');
+            alert('Relay Error: Failed to remove advertisement');
         }
     };
 

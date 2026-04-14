@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'; // Use our secure Relay
 import { Plus, Search, Edit2, Trash2, ExternalLink, Filter, Loader2, RefreshCw, CheckCircle2 } from 'lucide-react';
 import ArticleForm from '../components/Article/ArticleForm';
 
@@ -22,14 +22,11 @@ function ArticleManagement() {
     const fetchArticles = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('adminToken');
-            const res = await axios.get('/api/articles', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/api/articles');
             setArticles(res.data);
         } catch (err) {
             console.error('Failed to fetch articles:', err);
-            alert('Failed to load articles');
+            alert('Relay Node Error: Failed to load intelligence database.');
         } finally {
             setLoading(false);
         }
@@ -39,32 +36,26 @@ function ArticleManagement() {
         setRefreshing(true);
         setRefreshMessage('');
         try {
-            const token = localStorage.getItem('adminToken');
-            const res = await axios.post('/api/articles/refresh', {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.post('/api/sync-intelligence');
             if (res.data.status === 'success') {
-                setRefreshMessage('Live site updated!');
+                setRefreshMessage('Intelligence sync protocol initiated!');
                 setTimeout(() => setRefreshMessage(''), 3000);
             }
         } catch (err) {
-            alert('Failed to refresh live site');
+            alert('Relay Node Error: Failed to trigger sync protocol.');
         } finally {
             setRefreshing(false);
         }
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this article?')) return;
+        if (!window.confirm('Are you sure you want to purge this intelligence node?')) return;
         try {
-            const token = localStorage.getItem('adminToken');
-            await axios.delete(`/api/articles/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/api/articles/${id}`);
             setArticles(articles.filter(a => (a.id || a._id) !== id));
         } catch (err) {
             const errorMsg = err.response?.data?.error || err.message;
-            alert(`Failed to delete article: ${errorMsg}`);
+            alert(`Purge Protocol Failed: ${errorMsg}`);
         }
     };
 

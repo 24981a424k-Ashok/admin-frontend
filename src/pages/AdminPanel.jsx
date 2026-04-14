@@ -9,6 +9,7 @@ import NewspaperManagement from './NewspaperManagement';
 import DashboardHome from './DashboardHome';
 import ProtocolHistory from './ProtocolHistory';
 import StudentManagement from './StudentManagement';
+import SystemSettings from './SystemSettings';
 
 function AdminPanel() {
   console.log("AdminPanel component is mounting...");
@@ -22,6 +23,7 @@ function AdminPanel() {
     { path: '/admin/ads', name: 'Campaign Nodes', icon: <Megaphone size={20} /> },
     { path: '/admin/newspapers', name: 'Source Nodes', icon: <BookOpen size={20} /> },
     { path: '/admin/student', name: 'Student Intelligence', icon: <GraduationCap size={20} /> },
+    { path: '/admin/settings', name: 'Launch Control', icon: <Settings size={20} /> },
     { path: '/admin/history', name: 'Protocol History', icon: <HistoryIcon size={20} /> },
   ];
 
@@ -102,7 +104,7 @@ function AdminPanel() {
           <Route path="newspapers" element={<NewspaperManagement />} />
           <Route path="student" element={<StudentManagement />} />
           <Route path="history" element={<ProtocolHistory />} />
-          <Route path="settings" element={<div className="p-4" style={{ color: 'white' }}>Settings coming soon...</div>} />
+          <Route path="settings" element={<SystemSettings />} />
         </Routes>
       </main>
 

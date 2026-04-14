@@ -48,7 +48,7 @@ function ProtocolHistory() {
                     <div className="glass p-8 text-center text-muted">No history records found for the primary protocol.</div>
                 ) : (
                     history.map((record, idx) => (
-                        <div key={record._id} className="history-item glass p-6 mb-4 flex items-start gap-4 animate-in">
+                        <div key={record.id} className="history-item glass p-6 mb-4 flex items-start gap-4 animate-in">
                             <div className="action-badge p-3 rounded-xl bg-white/5 border border-white/10">
                                 {getActionIcon(record.action)}
                             </div>

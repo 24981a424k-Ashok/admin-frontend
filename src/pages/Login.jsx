@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, Loader2 } from 'lucide-react';
 
@@ -21,8 +21,8 @@ function Login({ setUser }) {
     console.log("Sending request to /api/auth/login...");
 
     try {
-      // Always use relative /api path — Vercel proxy routes it to admin-backend
-      const res = await axios.post('/api/auth/login', { email, password }, { timeout: 15000 });
+      // Use the 'api' relay which is configured with the Vercel Base URL
+      const res = await api.post('/api/auth/login', { email, password });
       console.log("Server Response Received:", res.data);
 
       if (res.data.status === 'success') {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Plus, Trash2, BookOpen, Loader2, Globe, Palette } from 'lucide-react';
 
 function NewspaperManagement() {
@@ -21,10 +21,7 @@ function NewspaperManagement() {
     const fetchPapers = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('adminToken');
-            const res = await axios.get('/api/newspapers', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/api/newspapers');
             setPapers(res.data);
         } catch (err) {
             console.error('Failed to fetch newspapers:', err);
@@ -36,28 +33,22 @@ function NewspaperManagement() {
     const handleAddPaper = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('adminToken');
-            await axios.post('/api/newspapers', newPaper, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post('/api/newspapers', newPaper);
             setNewPaper({ name: '', url: '', logo_text: '', logo_color: '#000000', country: 'Global' });
             setShowAddForm(false);
             fetchPapers();
         } catch (err) {
-            alert('Failed to add newspaper');
+            alert('Relay Error: Failed to add newspaper');
         }
     };
 
     const handleDeletePaper = async (id) => {
         if (!window.confirm('Delete this newspaper?')) return;
         try {
-            const token = localStorage.getItem('adminToken');
-            await axios.delete(`/api/newspapers/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/api/newspapers/${id}`);
             fetchPapers();
         } catch (err) {
-            alert('Failed to delete newspaper');
+            alert('Relay Error: Failed to delete newspaper');
         }
     };
 

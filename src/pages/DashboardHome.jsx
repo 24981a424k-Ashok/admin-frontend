@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Link } from 'react-router-dom';
 import {
     Activity,
@@ -33,16 +33,13 @@ function DashboardHome() {
 
     useEffect(() => {
         const fetchStats = async () => {
-            const token = localStorage.getItem('adminToken');
-            const headers = { Authorization: `Bearer ${token}` };
-
             try {
                 // Use allSettled to be robust if the backend has partial issues
                 const results = await Promise.allSettled([
-                    axios.get('/api/articles', { headers }),
-                    axios.get('/api/ads', { headers }),
-                    axios.get('/api/newspapers', { headers }),
-                    axios.get('/api/blueprints', { headers })
+                    api.get('/api/articles'),
+                    api.get('/api/ads'),
+                    api.get('/api/newspapers'),
+                    api.get('/api/blueprints')
                 ]);
 
                 const [artRes, adsRes, papRes, bluRes] = results;
@@ -188,14 +185,11 @@ function DashboardHome() {
                     </div>
                     <div className="action-pills">
                         <button className="pill-btn" onClick={async () => {
-                            const token = localStorage.getItem('adminToken');
                             try {
-                                await axios.post('/api/sync-intelligence', {}, {
-                                    headers: { Authorization: `Bearer ${token}` }
-                                });
+                                await api.post('/api/sync-intelligence');
                                 alert('Intelligence synchronization initiated.');
                             } catch (err) {
-                                alert('Sync failed: ' + (err.response?.data?.error || err.message));
+                                alert('Relay Sync failed: ' + (err.response?.data?.error || err.message));
                             }
                         }}>Re-sync Nodes</button>
                         <button className="pill-btn danger">Emergency Lock</button>
