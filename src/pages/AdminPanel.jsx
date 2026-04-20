@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Layout, Settings, History as HistoryIcon, Save, Play, ChevronLeft, LogOut, FileText, Megaphone, BookOpen, Activity, GraduationCap } from 'lucide-react';
+import { Layout, Settings, History as HistoryIcon, Save, Play, ChevronLeft, LogOut, FileText, Megaphone, BookOpen, Activity, GraduationCap, Cpu } from 'lucide-react';
 import BlueprintEditor from '../components/Editor/BlueprintEditor';
 import ArticleManagement from './ArticleManagement';
 import AdManagement from './AdManagement';
@@ -10,6 +10,7 @@ import DashboardHome from './DashboardHome';
 import ProtocolHistory from './ProtocolHistory';
 import StudentManagement from './StudentManagement';
 import SystemSettings from './SystemSettings';
+import PipelineControl from './PipelineControl';
 
 function AdminPanel() {
   console.log("AdminPanel component is mounting...");
@@ -23,6 +24,7 @@ function AdminPanel() {
     { path: '/admin/ads', name: 'Campaign Nodes', icon: <Megaphone size={20} /> },
     { path: '/admin/newspapers', name: 'Source Nodes', icon: <BookOpen size={20} /> },
     { path: '/admin/student', name: 'Student Intelligence', icon: <GraduationCap size={20} /> },
+    { path: '/admin/pipeline', name: 'Pipeline Control', icon: <Cpu size={20} /> },
     { path: '/admin/settings', name: 'Launch Control', icon: <Settings size={20} /> },
     { path: '/admin/history', name: 'Protocol History', icon: <HistoryIcon size={20} /> },
   ];
@@ -103,6 +105,7 @@ function AdminPanel() {
           <Route path="ads" element={<AdManagement />} />
           <Route path="newspapers" element={<NewspaperManagement />} />
           <Route path="student" element={<StudentManagement />} />
+          <Route path="pipeline" element={<PipelineControl />} />
           <Route path="history" element={<ProtocolHistory />} />
           <Route path="settings" element={<SystemSettings />} />
         </Routes>

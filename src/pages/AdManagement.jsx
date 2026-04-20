@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import { Plus, Trash2, Image as ImageIcon, Loader2, Sparkles, Megaphone } from 'lucide-react';
+import { Plus, Trash2, Image as ImageIcon, Loader2, Sparkles, Edit2 } from 'lucide-react';
 
 function AdManagement() {
     const [ads, setAds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [editingAd, setEditingAd] = useState(null);
     const [newAd, setNewAd] = useState({ image_url: '', caption: '', position: 'both', target_node: 'Global', target_url: '', target_platform: 'both' });
 
     useEffect(() => {
@@ -46,6 +47,21 @@ function AdManagement() {
         }
     };
 
+    const handleEditAd = (ad) => {
+        setEditingAd({ ...ad });
+    };
+
+    const handleUpdateAd = async (e) => {
+        e.preventDefault();
+        try {
+            await api.put(`/api/ads/${editingAd.id}`, editingAd);
+            setEditingAd(null);
+            fetchAds();
+        } catch (err) {
+            alert('Failed to update ad: ' + (err.response?.data?.error || err.message));
+        }
+    };
+
     return (
         <div className="ad-management-page">
             <header className="page-header">
@@ -60,6 +76,50 @@ function AdManagement() {
                     <Plus size={20} /> New Asset
                 </button>
             </header>
+
+            {/* EDIT MODAL */}
+            {editingAd && (
+                <div className="glass-modal-overlay">
+                    <div className="glass-modal glass p-8">
+                        <h2 className="premium-text mb-6" style={{ fontSize: '1.4rem' }}>Edit Campaign Asset</h2>
+                        <form onSubmit={handleUpdateAd} className="flex flex-col gap-6">
+                            <div className="input-group">
+                                <label>Asset Image URL</label>
+                                <input type="text" required value={editingAd.image_url} onChange={e => setEditingAd({...editingAd, image_url: e.target.value})} placeholder="https://..." />
+                            </div>
+                            <div className="input-group">
+                                <label>Campaign Headline</label>
+                                <input type="text" value={editingAd.caption || ''} onChange={e => setEditingAd({...editingAd, caption: e.target.value})} placeholder="Caption..." />
+                            </div>
+                            <div className="input-group">
+                                <label>Position</label>
+                                <select value={editingAd.position} onChange={e => setEditingAd({...editingAd, position: e.target.value})} style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border)', padding: '0.8rem', borderRadius: '12px', color: 'white' }}>
+                                    <option value="both">Both Sides</option>
+                                    <option value="left">Left Sidebar</option>
+                                    <option value="right">Right Sidebar</option>
+                                    <option value="mobile">Mobile Overlay</option>
+                                </select>
+                            </div>
+                            <div className="input-group">
+                                <label>Target Platform</label>
+                                <select value={editingAd.target_platform} onChange={e => setEditingAd({...editingAd, target_platform: e.target.value})} style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border)', padding: '0.8rem', borderRadius: '12px', color: 'white' }}>
+                                    <option value="both">Both Platforms</option>
+                                    <option value="main">Main Website Only</option>
+                                    <option value="student">Student Portal Only</option>
+                                </select>
+                            </div>
+                            <div className="input-group">
+                                <label>Redirect URL</label>
+                                <input type="text" value={editingAd.target_url || ''} onChange={e => setEditingAd({...editingAd, target_url: e.target.value})} placeholder="https://..." />
+                            </div>
+                            <div className="modal-actions">
+                                <button type="submit" className="save-btn">Save Changes</button>
+                                <button type="button" onClick={() => setEditingAd(null)} className="cancel-btn">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {showAddForm && (
                 <div className="glass-modal-overlay">
@@ -142,10 +202,10 @@ function AdManagement() {
                             <div className="ad-image-box">
                                 <img src={ad.image_url} alt={ad.caption} className="ad-preview-img" />
                                 <div className="ad-overlay-actions">
-                                    <button
-                                        onClick={() => handleDeleteAd(ad.id)}
-                                        className="remove-icon-btn"
-                                    >
+                                    <button onClick={() => handleEditAd(ad)} className="remove-icon-btn" style={{ background: 'var(--accent)', marginRight: '0.5rem' }} title="Edit">
+                                        <Edit2 size={20} />
+                                    </button>
+                                    <button onClick={() => handleDeleteAd(ad.id)} className="remove-icon-btn" title="Delete">
                                         <Trash2 size={24} />
                                     </button>
                                 </div>

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import { Plus, Trash2, BookOpen, Loader2, Globe, Palette } from 'lucide-react';
+import { Plus, Trash2, BookOpen, Loader2, Globe, Edit2 } from 'lucide-react';
 
 function NewspaperManagement() {
     const [papers, setPapers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [editingPaper, setEditingPaper] = useState(null);
     const [newPaper, setNewPaper] = useState({
         name: '',
         url: '',
@@ -52,6 +53,21 @@ function NewspaperManagement() {
         }
     };
 
+    const handleEditPaper = (paper) => {
+        setEditingPaper({ ...paper });
+    };
+
+    const handleUpdatePaper = async (e) => {
+        e.preventDefault();
+        try {
+            await api.put(`/api/newspapers/${editingPaper.id}`, editingPaper);
+            setEditingPaper(null);
+            fetchPapers();
+        } catch (err) {
+            alert('Failed to update source: ' + (err.response?.data?.error || err.message));
+        }
+    };
+
     return (
         <div className="newspaper-management-page">
             <header className="page-header">
@@ -66,6 +82,57 @@ function NewspaperManagement() {
                     <Plus size={20} /> Register Source
                 </button>
             </header>
+
+            {/* EDIT MODAL */}
+            {editingPaper && (
+                <div className="glass-modal-overlay">
+                    <div className="glass-modal glass p-8">
+                        <h2 className="premium-text mb-6" style={{ fontSize: '1.4rem' }}>Edit Intelligence Source</h2>
+                        <form onSubmit={handleUpdatePaper} className="flex flex-col gap-6">
+                            <div className="input-group">
+                                <label>Publication Name</label>
+                                <input type="text" required value={editingPaper.name} onChange={e => setEditingPaper({...editingPaper, name: e.target.value})} />
+                            </div>
+                            <div className="input-group">
+                                <label>URL</label>
+                                <input type="text" required value={editingPaper.url} onChange={e => setEditingPaper({...editingPaper, url: e.target.value})} />
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div className="input-group">
+                                    <label>Initials</label>
+                                    <input type="text" value={editingPaper.logo_text || ''} onChange={e => setEditingPaper({...editingPaper, logo_text: e.target.value})} placeholder="e.g. NYT" />
+                                </div>
+                                <div className="input-group">
+                                    <label>Node Color</label>
+                                    <div className="color-input-wrapper">
+                                        <input type="color" value={editingPaper.logo_color || '#4285f4'} onChange={e => setEditingPaper({...editingPaper, logo_color: e.target.value})} />
+                                        <input type="text" value={editingPaper.logo_color || ''} onChange={e => setEditingPaper({...editingPaper, logo_color: e.target.value})} style={{ flex: 1, fontSize: '0.75rem' }} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="input-group">
+                                <label>Region Node</label>
+                                <select value={editingPaper.country || 'Global'} onChange={e => setEditingPaper({...editingPaper, country: e.target.value})} className="premium-select">
+                                    <option value="Global">Global</option>
+                                    <option value="USA">USA</option>
+                                    <option value="UK">UK</option>
+                                    <option value="India">India</option>
+                                    <option value="Japan">Japan</option>
+                                    <option value="China">China</option>
+                                    <option value="Germany">Germany</option>
+                                    <option value="France">France</option>
+                                    <option value="Australia">Australia</option>
+                                    <option value="UAE">UAE</option>
+                                </select>
+                            </div>
+                            <div className="modal-actions">
+                                <button type="submit" className="save-btn">Save Changes</button>
+                                <button type="button" onClick={() => setEditingPaper(null)} className="cancel-btn">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {showAddForm && (
                 <div className="glass-modal-overlay">
@@ -163,10 +230,10 @@ function NewspaperManagement() {
                                     {paper.logo_text || paper.name.substring(0, 2).toUpperCase()}
                                 </div>
                                 <div className="paper-actions-overlay">
-                                    <button
-                                        onClick={() => handleDeletePaper(paper.id)}
-                                        className="paper-remove-btn"
-                                    >
+                                    <button onClick={() => handleEditPaper(paper)} className="paper-edit-btn" title="Edit">
+                                        <Edit2 size={16} />
+                                    </button>
+                                    <button onClick={() => handleDeletePaper(paper.id)} className="paper-remove-btn" title="Delete">
                                         <Trash2 size={18} />
                                     </button>
                                 </div>
@@ -324,6 +391,19 @@ function NewspaperManagement() {
                     background: var(--accent-red);
                     color: white;
                 }
+                .paper-edit-btn {
+                    background: rgba(66,133,244,0.1);
+                    color: var(--accent);
+                    width: 36px;
+                    height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 1px solid rgba(66,133,244,0.2);
+                    border-radius: 10px;
+                    margin-right: 0.5rem;
+                }
+                .paper-edit-btn:hover { background: var(--accent); color: white; }
                 .paper-meta {
                     padding: 1.5rem;
                 }
