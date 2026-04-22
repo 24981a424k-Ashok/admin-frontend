@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { X, Save, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 function ArticleForm({ article, onClose, onSave }) {
@@ -59,7 +59,6 @@ function ArticleForm({ article, onClose, onSave }) {
         setError('');
 
         try {
-            const token = localStorage.getItem('adminToken');
             const payload = {
                 ...formData,
                 summary_bullets: formData.summary_bullets.filter(b => b.trim()),
@@ -67,13 +66,9 @@ function ArticleForm({ article, onClose, onSave }) {
             };
 
             if (article) {
-                await axios.put(`/api/articles/${article.id}`, payload, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.put(`/api/articles/${article.id}`, payload);
             } else {
-                await axios.post('/api/articles', payload, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.post('/api/articles', payload);
             }
             onSave();
         } catch (err) {
