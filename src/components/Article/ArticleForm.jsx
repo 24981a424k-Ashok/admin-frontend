@@ -11,8 +11,11 @@ function ArticleForm({ article, onClose, onSave }) {
         bias_rating: 'Neutral',
         impact_score: 5,
         credibility_score: 0.9,
+        lang: 'english',
+        image_url_manual: '',
         why_it_matters: '',
         who_is_affected: '',
+        access_link: '',
         short_term_impact: '',
         long_term_impact: '',
         sentiment: 'Neutral',
@@ -27,8 +30,13 @@ function ArticleForm({ article, onClose, onSave }) {
         if (article) {
             setFormData({
                 ...article,
-                summary_bullets: article.summary_bullets.length ? article.summary_bullets : [''],
-                impact_tags: article.impact_tags.length ? article.impact_tags : ['']
+                lang: article.lang || 'english',
+                image_url_manual: article.image_url_manual || '',
+                why_it_matters: article.why_it_matters || '',
+                who_is_affected: article.who_is_affected || '',
+                access_link: article.access_link || '',
+                summary_bullets: article.summary_bullets && article.summary_bullets.length ? article.summary_bullets : [''],
+                impact_tags: article.impact_tags && article.impact_tags.length ? article.impact_tags : ['']
             });
         }
     }, [article]);
@@ -131,12 +139,17 @@ function ArticleForm({ article, onClose, onSave }) {
                         </div>
 
                         <div className="form-section">
-                            <label>Bias Rating</label>
-                            <select name="bias_rating" value={formData.bias_rating} onChange={handleChange}>
-                                <option value="Neutral">Neutral</option>
-                                <option value="Slightly Left">Slightly Left</option>
-                                <option value="Slightly Right">Slightly Right</option>
-                                <option value="Biased">Biased</option>
+                            <label>Language Node</label>
+                            <select 
+                                name="lang"
+                                value={formData.lang}
+                                onChange={handleChange}
+                            >
+                                <option value="english">English (Global)</option>
+                                <option value="hindi">Hindi (India)</option>
+                                <option value="telugu">Telugu (India)</option>
+                                <option value="tamil">Tamil (India)</option>
+                                <option value="japanese">Japanese (Global)</option>
                             </select>
                         </div>
 
@@ -145,14 +158,48 @@ function ArticleForm({ article, onClose, onSave }) {
                             <input name="impact_score" type="number" min="1" max="10" value={formData.impact_score} onChange={handleChange} />
                         </div>
 
+                        <div className="form-section">
+                            <label>Custom Image URL (Manual Override)</label>
+                            <input 
+                                name="image_url_manual"
+                                type="text"
+                                value={formData.image_url_manual}
+                                onChange={handleChange}
+                                placeholder="https://..."
+                            />
+                        </div>
+
+                        <div className="form-section">
+                            <label>Access/Target Link (CTA)</label>
+                            <input 
+                                name="access_link"
+                                type="text"
+                                value={formData.access_link}
+                                onChange={handleChange}
+                                placeholder="Link for 'Apply Now' or 'Read More'"
+                            />
+                        </div>
+
                         <div className="form-section full-width">
-                            <label>Why It Matters</label>
-                            <textarea name="why_it_matters" value={formData.why_it_matters} onChange={handleChange} rows={2} />
+                            <label>Why It Matters (Mission Critical)</label>
+                            <textarea 
+                                name="why_it_matters"
+                                value={formData.why_it_matters}
+                                onChange={handleChange}
+                                rows={2}
+                                placeholder="Explain the strategic significance..."
+                            />
                         </div>
 
                         <div className="form-section full-width">
                             <label>Who Is Affected</label>
-                            <textarea name="who_is_affected" value={formData.who_is_affected} onChange={handleChange} rows={2} />
+                            <textarea 
+                                name="who_is_affected"
+                                value={formData.who_is_affected}
+                                onChange={handleChange}
+                                rows={2}
+                                placeholder="Target demographics or sectors..."
+                            />
                         </div>
 
                         <div className="form-section full-width">

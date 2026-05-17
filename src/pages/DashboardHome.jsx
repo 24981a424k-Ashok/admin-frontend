@@ -34,35 +34,19 @@ function DashboardHome() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                // Use allSettled to be robust if the backend has partial issues
-                const results = await Promise.allSettled([
-                    api.get('/api/articles'),
-                    api.get('/api/ads'),
-                    api.get('/api/newspapers'),
-                    api.get('/api/blueprints')
-                ]);
-
-                const [artRes, adsRes, papRes, bluRes] = results;
-
-                const artData = artRes.status === 'fulfilled' ? artRes.value.data : [];
-                const adsData = adsRes.status === 'fulfilled' ? adsRes.value.data : [];
-                const papData = papRes.status === 'fulfilled' ? papRes.value.data : [];
-                const bluData = bluRes.status === 'fulfilled' ? bluRes.value.data : [];
-
-                // Logic for dynamic counts
-                const uniqueSectors = new Set(artData.map(a => a.category).filter(Boolean)).size;
-                const uniqueTerminals = new Set(artData.map(a => a.country).filter(Boolean)).size;
+                const res = await api.get('/api/stats');
+                const counts = res.data.counts || {};
 
                 setStats({
-                    articles: artData.length || 0,
-                    ads: adsData.length || 0,
-                    papers: papData.length || 0,
-                    blueprints: bluData.length || 0,
-                    sectors: uniqueSectors || 0,
-                    terminals: uniqueTerminals || 0
+                    articles: counts.verified_articles || 0,
+                    ads: counts.advertisements || 0,
+                    papers: counts.newspapers || 0,
+                    blueprints: counts.digests || 0,
+                    sectors: counts.sectors || 12,
+                    terminals: counts.terminals || 5
                 });
             } catch (err) {
-                console.error("failed to process stats", err);
+                console.error("failed to fetch centralized stats", err);
             } finally {
                 setLoading(false);
             }
