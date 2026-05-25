@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Clock, History as HistoryIcon, ArrowLeft, CheckCircle2, Save, Play } from 'lucide-react';
 
 function ProtocolHistory() {
@@ -12,10 +12,7 @@ function ProtocolHistory() {
 
     const fetchHistory = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            const historyRes = await axios.get('/api/history', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const historyRes = await api.get('/api/history');
             setHistory(historyRes.data);
         } catch (err) {
             console.error('Failed to fetch protocol history:', err);

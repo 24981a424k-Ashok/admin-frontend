@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Layout, Settings, History as HistoryIcon, Save, Play, ChevronLeft, LogOut, FileText, Megaphone, BookOpen, Activity, GraduationCap, Cpu } from 'lucide-react';
 import BlueprintEditor from '../components/Editor/BlueprintEditor';
@@ -32,13 +32,13 @@ function AdminPanel() {
   const handlePublish = async () => {
     setIsSaving(true);
     try {
-      const res = await axios.get('/api/blueprints');
+      const res = await api.get('/api/blueprints');
       if (res.data && res.data.length > 0) {
         // Find the most recent or active blueprint
         const activeBlueprint = res.data.find(b => b.isActive) || res.data[0];
         const id = activeBlueprint._id;
         
-        await axios.post(`/api/blueprints/publish/${id}`);
+        await api.post(`/api/blueprints/publish/${id}`);
         // We use both console and alert for maximum visibility during debugging
         console.log('Blueprint published successfully');
         alert('SUCCESS: Layout synchronization complete. Changes are now live on the public dashboard.');

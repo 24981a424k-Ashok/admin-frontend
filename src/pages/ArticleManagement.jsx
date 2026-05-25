@@ -143,7 +143,6 @@ function ArticleManagement() {
             ) : (
                 <div className="grid grid-cols-1 gap-6">
                     {filteredArticles
-                        .sort((a, b) => new Date(a.published_at) - new Date(b.published_at))
                         .map((art, index) => (
                             <div key={art.id} className="premium-article-card group">
                                 <div className="card-index">#{index + 1}</div>

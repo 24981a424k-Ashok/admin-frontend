@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { 
     Search, GraduationCap, Filter, ExternalLink, Calendar, 
     Plus, X, Image as ImageIcon, CheckCircle2, AlertCircle, 
@@ -34,10 +34,7 @@ function StudentManagement() {
     const fetchArticles = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('adminToken');
-            const res = await axios.get(`/api/articles?category=${encodeURIComponent(category)}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get(`/api/articles?category=${encodeURIComponent(category)}`);
             const items = res.data.articles || res.data;
             const sortedItems = Array.isArray(items) ? items.sort((a,b) => (b.impact_score || 0) - (a.impact_score || 0) || new Date(b.published_at) - new Date(a.published_at)) : [];
             setArticles(sortedItems);
@@ -70,10 +67,7 @@ function StudentManagement() {
     const handleDeleteClick = async (id) => {
         if (!window.confirm("Are you sure you want to terminate this intelligence node?")) return;
         try {
-            const token = localStorage.getItem('adminToken');
-            await axios.delete(`/api/articles/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/api/articles/${id}`);
             fetchArticles();
         } catch (err) {
             alert("Deletion failed.");
@@ -104,15 +98,10 @@ function StudentManagement() {
     const handleFinalPublish = async () => {
         setIsSubmitting(true);
         try {
-            const token = localStorage.getItem('adminToken');
             if (editId) {
-                await axios.put(`/api/articles/${editId}`, newArticle, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.put(`/api/articles/${editId}`, newArticle);
             } else {
-                await axios.post('/api/student/articles', newArticle, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.post('/api/articles', newArticle);
             }
             setShowPublishModal(false);
             fetchArticles();

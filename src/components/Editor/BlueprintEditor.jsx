@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Image as ImageIcon, Link as LinkIcon, Type, X, Upload, CheckCircle2, AlertCircle, Loader2, Smartphone, Eye, Megaphone, Trash2, Sparkles, Globe } from 'lucide-react';
-import axios from 'axios';
+import api from '../../api';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function BlueprintEditor() {
@@ -19,7 +19,7 @@ function BlueprintEditor() {
     useEffect(() => {
         const fetchCampaign = async () => {
             try {
-                const res = await axios.get('/api/blueprints/active');
+                const res = await api.get('/api/blueprints/active');
                 if (res.data && res.data.structure && res.data.structure.type === 'campaign') {
                     const content = res.data.structure.content;
                     setCampaign({
@@ -60,11 +60,11 @@ function BlueprintEditor() {
         setStatus(null);
         try {
             const structure = { type: 'campaign', content: { ...campaign, is_published: publish } };
-            const res = await axios.post('/api/blueprints', { name: 'Campaign Node', structure });
+            const res = await api.post('/api/blueprints', { name: 'Campaign Node', structure });
             const blueprintId = res.data._id || res.data.id;
 
             if (publish && blueprintId) {
-                await axios.post(`/api/blueprints/publish/${blueprintId}`);
+                await api.post(`/api/blueprints/publish/${blueprintId}`);
                 setStatus({ type: 'success', message: 'Campaign Live!' });
             } else {
                 setStatus({ type: 'success', message: 'Config Saved!' });
