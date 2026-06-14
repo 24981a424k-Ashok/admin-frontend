@@ -25,7 +25,7 @@ function StudentManagement() {
     });
     const [editId, setEditId] = useState(null);
 
-    const categories = ["All", "Scholarships & Internships", "Exams & Results", "Policy & Research", "Admissions & Courses", "Campus Life", "Career & Jobs"];
+    const categories = ["All", "Scholarships & Internships", "Exams & Results", "Admissions & Courses", "Career & Jobs", "Education & Policy"];
 
     useEffect(() => {
         fetchArticles();

@@ -376,9 +376,7 @@ function ArticleManagement() {
                 .action-buttons {
                     display: flex;
                     gap: 0.6rem;
-                    margin-top: 1.5rem;
-                    padding-top: 1.5rem;
-                    border-top: 1px solid var(--border);
+                    align-items: center;
                 }
                 .edit-btn, .delete-btn {
                     padding: 0.6rem 1.2rem;

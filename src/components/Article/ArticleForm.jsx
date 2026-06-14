@@ -90,7 +90,11 @@ function ArticleForm({ article, onClose, onSave }) {
         "AI & Machine Learning", "Business & Economy", "Defense & Security",
         "Education", "Entertainment", "Environment & Climate",
         "India / Local News", "Lifestyle & Wellness", "Politics",
-        "Science & Health", "Sports", "Technology", "World News", "Other News"
+        "Science & Health", "Sports", "Technology", "World News", "Other News",
+        "Scholarships & Internships", "Exams & Results",
+        "Admissions & Courses", "Career & Jobs", "Education & Policy",
+        "Education Policy & Govt Updates", "Career & Placement News",
+        "Study Abroad Updates", "AI & Tech for Students"
     ];
 
     return (
